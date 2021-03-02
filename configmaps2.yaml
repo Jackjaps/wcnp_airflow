@@ -1,0 +1,31 @@
+# Source: airflow/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-dev-init
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev-init
+    heritage: Helm
+data:
+  init-airflow.sh: |
+    set -e
+    AIRFLOW_PATH=`pip show apache-airflow | grep 'Location: ' | cut -d' ' -f2 || true`
+      if [ -z $AIRFLOW_PY3 ]; then
+         AIRFLOW_PATH=`pip show apache-airflow | grep 'Location: ' | cut -d' ' -f2`
+      fi
+      AIRFLOW_VERSION=`pip freeze | grep apache-airflow | cut -d'=' -f3`
+    echo $AIRFLOW_PATH
+    echo $AIRFLOW_VERSION
+    cd $AIRFLOW_PATH/airflow
+    pwd
+    airflow upgradedb
+    echo "paso la configuracion"
+    alembic upgrade heads
+
+    if [[ "$AIRFLOW_VERSION" > "2" ]]; then
+    CREATE_USER="users --create"
+    else
+    CREATE_USER="create_user"
+    fi

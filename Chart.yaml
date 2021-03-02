@@ -1,0 +1,10 @@
+apiVersion: V2
+name: airflow
+description: Airflow running on KubernetesExecutor
+version: 0.0.1
+appVersion: 2.0.0-dev
+type: application
+keywords:
+  - workflow
+  - airflow
+  - dag

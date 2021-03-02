@@ -1,0 +1,604 @@
+---
+# Source: airflow/templates/service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: airflow-dev-cluster-access
+  labels:
+    app: airflow-scheduler
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+---
+# Source: airflow/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: postgres
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+type: Opaque
+data:
+  postgresUser: "YWRtaW4="
+  postgresPassword: "YWRtaW4="
+---
+# Source: airflow/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+type: Opaque
+data:
+  GIT_SYNC_USERNAME: "amFja2phcHM="
+  GIT_SYNC_PASSWORD: "SmFjazcyMzI0OTIx"
+---
+# Source: airflow/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: webserver-config
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+type: Opaque
+data:
+  webserver_config.py: "IyAtKi0gY29kaW5nOiB1dGYtOCAtKi0KIwojIExpY2Vuc2VkIHRvIHRoZSBBcGFjaGUgU29mdHdhcmUgRm91bmRhdGlvbiAoQVNGKSB1bmRlciBvbmUKIyBvciBtb3JlIGNvbnRyaWJ1dG9yIGxpY2Vuc2UgYWdyZWVtZW50cy4gIFNlZSB0aGUgTk9USUNFIGZpbGUKIyBkaXN0cmlidXRlZCB3aXRoIHRoaXMgd29yayBmb3IgYWRkaXRpb25hbCBpbmZvcm1hdGlvbgojIHJlZ2FyZGluZyBjb3B5cmlnaHQgb3duZXJzaGlwLiAgVGhlIEFTRiBsaWNlbnNlcyB0aGlzIGZpbGUKIyB0byB5b3UgdW5kZXIgdGhlIEFwYWNoZSBMaWNlbnNlLCBWZXJzaW9uIDIuMCAodGhlCiMgIkxpY2Vuc2UiKTsgeW91IG1heSBub3QgdXNlIHRoaXMgZmlsZSBleGNlcHQgaW4gY29tcGxpYW5jZQojIHdpdGggdGhlIExpY2Vuc2UuICBZb3UgbWF5IG9idGFpbiBhIGNvcHkgb2YgdGhlIExpY2Vuc2UgYXQKIwojICAgaHR0cDovL3d3dy5hcGFjaGUub3JnL2xpY2Vuc2VzL0xJQ0VOU0UtMi4wCiMKIyBVbmxlc3MgcmVxdWlyZWQgYnkgYXBwbGljYWJsZSBsYXcgb3IgYWdyZWVkIHRvIGluIHdyaXRpbmcsCiMgc29mdHdhcmUgZGlzdHJpYnV0ZWQgdW5kZXIgdGhlIExpY2Vuc2UgaXMgZGlzdHJpYnV0ZWQgb24gYW4KIyAiQVMgSVMiIEJBU0lTLCBXSVRIT1VUIFdBUlJBTlRJRVMgT1IgQ09ORElUSU9OUyBPRiBBTlkKIyBLSU5ELCBlaXRoZXIgZXhwcmVzcyBvciBpbXBsaWVkLiAgU2VlIHRoZSBMaWNlbnNlIGZvciB0aGUKIyBzcGVjaWZpYyBsYW5ndWFnZSBnb3Zlcm5pbmcgcGVybWlzc2lvbnMgYW5kIGxpbWl0YXRpb25zCiMgdW5kZXIgdGhlIExpY2Vuc2UuCgppbXBvcnQgb3MKZnJvbSBhaXJmbG93IGltcG9ydCBjb25maWd1cmF0aW9uIGFzIGNvbmYKZnJvbSBmbGFza19hcHBidWlsZGVyLnNlY3VyaXR5Lm1hbmFnZXIgaW1wb3J0IEFVVEhfREIKIyBmcm9tIGZsYXNrX2FwcGJ1aWxkZXIuc2VjdXJpdHkubWFuYWdlciBpbXBvcnQgQVVUSF9MREFQCmZyb20gZmxhc2tfYXBwYnVpbGRlci5zZWN1cml0eS5tYW5hZ2VyIGltcG9ydCBBVVRIX09BVVRICiMgZnJvbSBmbGFza19hcHBidWlsZGVyLnNlY3VyaXR5Lm1hbmFnZXIgaW1wb3J0IEFVVEhfT0lECiMgZnJvbSBmbGFza19hcHBidWlsZGVyLnNlY3VyaXR5Lm1hbmFnZXIgaW1wb3J0IEFVVEhfUkVNT1RFX1VTRVIKYmFzZWRpciA9IG9zLnBhdGguYWJzcGF0aChvcy5wYXRoLmRpcm5hbWUoX19maWxlX18pKQoKIyBUaGUgU1FMQWxjaGVteSBjb25uZWN0aW9uIHN0cmluZy4KU1FMQUxDSEVNWV9EQVRBQkFTRV9VUkkgPSBjb25mLmdldCgnY29yZScsICdTUUxfQUxDSEVNWV9DT05OJykKCiMgRmxhc2stV1RGIGZsYWcgZm9yIENTUkYKQ1NSRl9FTkFCTEVEID0gVHJ1ZQoKIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCiMgQVVUSEVOVElDQVRJT04gQ09ORklHCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIEZvciBkZXRhaWxzIG9uIGhvdyB0byBzZXQgdXAgZWFjaCBvZiB0aGUgZm9sbG93aW5nIGF1dGhlbnRpY2F0aW9uLCBzZWUKIyBodHRwOi8vZmxhc2stYXBwYnVpbGRlci5yZWFkdGhlZG9jcy5pby9lbi9sYXRlc3Qvc2VjdXJpdHkuaHRtbCMgYXV0aGVudGljYXRpb24tbWV0aG9kcwojIGZvciBkZXRhaWxzLgoKIyBUaGUgYXV0aGVudGljYXRpb24gdHlwZQojIEFVVEhfT0lEIDogSXMgZm9yIE9wZW5JRAojIEFVVEhfREIgOiBJcyBmb3IgZGF0YWJhc2UKIyBBVVRIX0xEQVAgOiBJcyBmb3IgTERBUAojIEFVVEhfUkVNT1RFX1VTRVIgOiBJcyBmb3IgdXNpbmcgUkVNT1RFX1VTRVIgZnJvbSB3ZWIgc2VydmVyCiMgQVVUSF9PQVVUSCA6IElzIGZvciBPQXV0aApBVVRIX1RZUEUgPSBBVVRIX0RCCgojIFdpbGwgYWxsb3cgdXNlciBzZWxmIHJlZ2lzdHJhdGlvbgpBVVRIX1VTRVJfUkVHSVNUUkFUSU9OID0gVHJ1ZQoKIyBUaGUgZGVmYXVsdCB1c2VyIHNlbGYgcmVnaXN0cmF0aW9uIHJvbGUKQVVUSF9VU0VSX1JFR0lTVFJBVElPTl9ST0xFID0gIlVzZXIiCgojIFdoZW4gdXNpbmcgT0F1dGggQXV0aCwgdW5jb21tZW50IHRvIHNldHVwIHByb3ZpZGVyKHMpIGluZm8KIyBHb29nbGUgT0F1dGggZXhhbXBsZToKIyBPQVVUSF9QUk9WSURFUlMgPSBbewojICAgJ25hbWUnOidnb29nbGUnLAojICAgJ3doaXRlbGlzdCc6IFtdLCAgIyBvcHRpb25hbAojICAgJ3Rva2VuX2tleSc6ICdhY2Nlc3NfdG9rZW4nLAojICAgJ2ljb24nOiAnZmEtZ29vZ2xlJywKIyAgICdyZW1vdGVfYXBwJzogewojICAgICAnYmFzZV91cmwnOiAnaHR0cHM6Ly93d3cuZ29vZ2xlYXBpcy5jb20vb2F1dGgyL3YyLycsCiMgICAgICdyZXF1ZXN0X3Rva2VuX3BhcmFtcyc6IHsKIyAgICAgICAnc2NvcGUnOiAnZW1haWwgcHJvZmlsZScKIyAgICAgfSwKIyAgICAgJ2FjY2Vzc190b2tlbl91cmwnOiAnJywKIyAgICAgJ2F1dGhvcml6ZV91cmwnOiAnJywKIyAgICAgJ3JlcXVlc3RfdG9rZW5fdXJsJzogJycsCiMgICAgICdjb25zdW1lcl9rZXknOiAnJywKIyAgICAgJ2NvbnN1bWVyX3NlY3JldCc6ICcnLAojICAgfQojIH1dCg=="
+---
+# Source: airflow/templates/secrets.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: airflow-dev-env
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+type: Opaque
+data:
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN: "cG9zdGdyZXNxbCtwc3ljb3BnMjovL2FkbWluOmFkbWluQHBvc3RncmVzL2FpcmZsb3c="
+  AIRFLOW__CORE__EXECUTOR: S3ViZXJuZXRlc0V4ZWN1dG9y
+  AIRFLOW_HOME: "L3Vzci9sb2NhbC9haXJmbG93"
+  AIRFLOW__KUBERNETES__GIT_USER: "amFja2phcHM="
+  AIRFLOW__KUBERNETES__GIT_PASSWORD: "SmFjazcyMzI0OTIx"
+  FERNET_KEY: "b1N4QWZPT2NxM1E5SXZPTHpiQTgyc2psV0EwZllEdDRmWjdISDRfV1Rudz0="
+
+  # For puckel/docker-airflow
+  POSTGRES_HOST: "cG9zdGdyZXM="
+  POSTGRES_USER: "YWRtaW4="
+  POSTGRES_PASSWORD: "YWRtaW4="
+  POSTGRES_DB: "YWlyZmxvdw=="
+---
+# Source: airflow/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-dev-init
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+data:
+  init-airflow.sh: |
+    set -e
+    AIRFLOW_PATH=`pip show apache-airflow | grep 'Location: ' | cut -d' ' -f2 || true`
+      if [ -z $AIRFLOW_PY3 ]; then
+         AIRFLOW_PATH=`pip show apache-airflow | grep 'Location: ' | cut -d' ' -f2`
+      fi
+      AIRFLOW_VERSION=`pip freeze | grep apache-airflow | cut -d'=' -f3`
+    cd $AIRFLOW_PATH/airflow
+    airflow upgradedb
+    alembic upgrade heads
+
+    if [[ "$AIRFLOW_VERSION" > "2" ]]; then
+    CREATE_USER="users --create"
+    else
+    CREATE_USER="create_user"
+    fi
+---
+# Source: airflow/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-dev-nginx
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+data:
+  nginx.conf: |
+    server {
+      listen 80;
+      server_name _;
+      # if ($http_x_forwarded_proto = "http") {
+      #     return 301 https://$host$request_uri;
+      # }
+      location / {
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+      }
+      location /health {
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+      }
+    }
+---
+# Source: airflow/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: airflow-dev-config
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+data:
+  airflow.cfg: |
+    [core]
+    airflow_home = /usr/local/airflow
+    dags_folder = /usr/local/airflow/dags/repo/dags
+    base_log_folder = /usr/local/airflow/logs
+    executor = KubernetesExecutor
+    plugins_folder = /usr/local/airflow/plugins
+    sql_alchemy_conn = $sql_alchemy_conn
+    load_examples: false
+    remote_logging:  false
+    logging_level: WARN
+    fab_logging_level: WARN
+    store_serialized_dags: False
+    min_serialized_dag_update_interval: 30
+    [scheduler]
+    child_process_log_directory = /usr/local/airflow/logs/scheduler
+    catchup_by_default: False
+
+    [webserver]
+    rbac = false
+   
+
+    [kubernetes]
+    worker_dags_folder = /usr/local/airflow/dags
+    worker_container_repository = jacoboleguizamo/airflow
+    worker_container_tag = latest
+    worker_container_image_pull_policy = IfNotPresent
+    delete_worker_pods = true
+    delete_worker_pods_on_success:  true
+    #namespace: ""
+    airflow_configmap = airflow-dev-config
+    airflow_local_settings_configmap: airflow-dev-config
+    git_repo = https://github.com/Jackjaps/airflow.git
+    git_branch = master
+    git_subpath = dags
+    git_dags_folder_mount_point = /usr/local/airflow/dags
+    logs_volume_claim = airflow-dev-logs
+    logs_volume_subpath =
+
+    in_cluster = true
+    namespace = default
+
+    # for cloning dags from git repositories into volumes: https://github.com/kubernetes/git-sync
+    git_sync_container_repository = k8s.gcr.io/git-sync
+    git_sync_container_tag = v3.0.1
+    git_sync_init_container_name = git-sync-clone
+
+    [kubernetes_node_selectors]
+    # the key-value pairs to be given to worker pods.
+    # the worker pods will be scheduled to the nodes of the specified key-value pairs.
+    # should be supplied in the format: key = value
+    
+    [kubernetes_environment_variables]
+    AIRFLOW_HOME:  /opt/airflow
+    PYTHONPATH: /opt/airflow
+
+    [kubernetes_secrets]
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN = airflow-dev-env=AIRFLOW__CORE__SQL_ALCHEMY_CONN
+    AIRFLOW_HOME = airflow-dev-env=AIRFLOW_HOME
+
+    [cli]
+    api_client = airflow.api.client.json_client
+    #endpoint_url = https://airflow.crunchanalytics.cloud
+
+    [api]
+    auth_backend = airflow.api.auth.backend.default
+
+    [admin]
+    # ui to hide sensitive variable fields when set to true
+    hide_sensitive_variable_fields = true
+---
+# Source: airflow/templates/pvc.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: airflow-dev-logs-pv
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/Users/jacobomunoz/Documents/ingenieria/kubernetes/airflow-kube-helm/airflow/logs"
+---
+# Source: airflow/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: airflow-dev-logs
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: "1Gi"
+  selector:
+    matchLabels:
+      app: airflow
+      chart: airflow-0.0.1
+      release: airflow-dev
+      heritage: Helm
+#
+#
+
+
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: dev-logs-pv
+#  labels:
+#    app: airflow
+#    chart: airflow-0.0.1
+#    release: dev
+#    heritage: Helm
+#spec:
+#  capacity:
+#    storage: 10Gi
+#  accessModes:
+#    - ReadWriteMany
+#  persistentVolumeReclaimPolicy: Retain
+#  azureFile:
+#    secretName: azure-secret
+#    shareName: airflowdisk
+#    readOnly: false
+#---
+#kind: PersistentVolumeClaim
+#apiVersion: v1
+#metadata:
+#  name: dev-logs
+#  labels:
+#    app: airflow
+#    chart: airflow-0.0.1
+#    release: dev
+#    heritage: Helm
+#  annotations:
+#    volume.beta.kubernetes.io/storage-class: ""
+#spec:
+#  accessModes:
+#    - ReadWriteMany
+#  resources:
+#    requests:
+#      storage: 10Gi
+#  selector:
+#    matchLabels:
+#      usage: airflowdisk
+---
+# Source: airflow/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: airflow-dev-web
+  labels:
+    app: airflow-web
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  type: NodePort
+  selector:
+    app: airflow-web
+    release: airflow-dev
+  ports:
+    - name: web
+      protocol: TCP
+      port: 8080
+---
+# Source: airflow/templates/scheduler.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-dev-scheduler
+  labels:
+    app: airflow-scheduler
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: airflow-scheduler
+      release: airflow-dev
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+  template:
+    metadata:
+      annotations:
+        checksum/config: cb1626d1c769209e2d3bdd8a6d7d89b5326a2f259bde40345dec2af233b8fda1
+        configmap.fabric8.io/update-on-change: "airflow-dev-env"
+      labels:
+        app: airflow-scheduler
+        release: airflow-dev
+    spec:
+      securityContext:
+        fsGroup: 1000
+      restartPolicy: Always
+      containers:
+      - name: git-sync
+        image: k8s.gcr.io/git-sync:v3.0.1
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: airflow-dev-dags
+            mountPath: /git
+        env:
+          - name: GIT_SYNC_REPO
+            value: https://github.com/Jackjaps/airflow.git
+          - name: GIT_SYNC_BRANCH
+            value: master
+          - name: GIT_SYNC_ROOT
+            value: /git
+          - name: GIT_SYNC_DEST
+            value: repo
+          - name: GIT_SYNC_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: git
+                key: GIT_SYNC_USERNAME
+          - name: GIT_SYNC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: git
+                key: GIT_SYNC_PASSWORD
+      - name: scheduler
+        image: jacoboleguizamo/airflow:latest
+        imagePullPolicy: IfNotPresent
+        args: ["scheduler"]
+        envFrom:
+        - secretRef:
+            name: airflow-dev-env
+        env:
+        - name: AIRFLOW_KUBE_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: airflow-config
+          mountPath: /usr/local/airflow/airflow.cfg
+          subPath: airflow.cfg
+        - name: airflow-dev-dags
+          mountPath: /usr/local/airflow/dags
+        - name: airflow-logs
+          mountPath: /usr/local/airflow/logs
+      volumes:
+      - name: airflow-logs
+        persistentVolumeClaim:
+          claimName: airflow-dev-logs
+      - name: airflow-config
+        configMap:
+          name: airflow-dev-config
+      - name: airflow-dev-dags
+        emptyDir: {}
+---
+# Source: airflow/templates/webserver.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airflow-dev-web
+  labels:
+    app: airflow-web
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  replicas: 1
+  strategy:
+    # Smooth rolling update of the Web UI
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: airflow-web
+      release: airflow-dev
+  template:
+    metadata:
+      annotations:
+        checksum/config: cb1626d1c769209e2d3bdd8a6d7d89b5326a2f259bde40345dec2af233b8fda1
+        configmap.fabric8.io/update-on-change: "airflow-dev-env"
+      labels:
+        app: airflow-web
+        release: airflow-dev
+    spec:
+      securityContext:
+        fsGroup: 1000
+      restartPolicy: Always
+      initContainers:
+      - name: "init-airflow"
+        image: jacoboleguizamo/airflow:latest
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: airflow-config
+            mountPath: /usr/local/airflow/airflow.cfg
+            subPath: airflow.cfg
+          - name: init-airflow
+            mountPath: /usr/local/init-airflow.sh
+            subPath: init-airflow.sh
+        envFrom:
+          - secretRef:
+              name: airflow-dev-env
+        command:
+          - "bash"
+        args:
+          - "-cx"
+          - "bash /usr/local/init-airflow.sh"
+      containers:
+      - name: git-sync
+        image: k8s.gcr.io/git-sync:v3.0.1
+        imagePullPolicy: IfNotPresent
+        volumeMounts:
+          - name: airflow-dev-dags
+            mountPath: /git
+        env:
+          - name: GIT_SYNC_REPO
+            value: https://github.com/Jackjaps/airflow.git
+          - name: GIT_SYNC_BRANCH
+            value: master
+          - name: GIT_SYNC_ROOT
+            value: /git
+          - name: GIT_SYNC_DEST
+            value: repo
+          - name: GIT_SYNC_WAIT
+            value: "60"
+          - name: GIT_SYNC_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: git
+                key: GIT_SYNC_USERNAME
+          - name: GIT_SYNC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: git
+                key: GIT_SYNC_PASSWORD
+      - name: nginx
+        image: nginx
+        imagePullPolicy: IfNotPresent
+        ports:
+          - name: nginx
+            containerPort: 80
+        volumeMounts:
+          - name: nginx
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: nginx.conf
+        readinessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 5
+          httpGet:
+            path: /health
+            port: 80
+        livenessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 5
+          httpGet:
+            path: /health
+            port: 80
+      - name: webserver
+        image: jacoboleguizamo/airflow:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: webserver
+          containerPort: 8080
+        args: ["webserver"]
+        envFrom:
+          - secretRef:
+              name: airflow-dev-env
+        env:
+        - name: AIRFLOW_KUBE_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # - name: FORWARDED_ALLOW_IPS
+        #   value: "*"
+        volumeMounts:
+        - name: airflow-config 
+          mountPath: /usr/local/airflow/airflow.cfg
+          subPath: airflow.cfg
+        - name: webserver-config
+          mountPath: /usr/local/airflow/webserver_config.py
+          subPath: webserver_config.py
+        - name: airflow-logs
+          mountPath: /usr/local/airflow/logs
+        - name: airflow-dev-dags
+          mountPath: /usr/local/airflow/dags
+        readinessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 5
+          httpGet:
+            path: /health
+            port: 8080
+        livenessProbe:
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 5
+          httpGet:
+            path: /health
+            port: 8080
+      volumes:
+      - name: airflow-logs
+        persistentVolumeClaim:
+          claimName: airflow-dev-logs
+      - name: airflow-config
+        configMap:
+          name: airflow-dev-config
+      - name: webserver-config
+        secret:
+          secretName: webserver-config
+      - name: init-airflow
+        configMap:
+          name: airflow-dev-init
+      - name: nginx
+        configMap:
+          name: airflow-dev-nginx
+      - name: airflow-dev-dags
+        emptyDir: {}
+---
+# Source: airflow/templates/rbac.yaml
+#apiVersion: rbac.authorization.k8s.io/v1beta1
+#kind: ClusterRoleBinding
+#metadata:
+#  name: airflow-dev-cluster-access
+#  labels:
+#    app: airflow-scheduler
+#    chart: airflow-0.0.1
+#    release: airflow-dev
+#    heritage: Helm
+#subjects:
+#  - kind: ServiceAccount
+#    # Reference to upper's `metadata.name`
+#    name: airflow-dev-cluster-access
+#    namespace: default
+#roleRef:
+#  kind: ClusterRole
+#  name: cluster-admin
+#  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,62 @@
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+#  name: airflow-dev-logs-pv
+#  labels:
+#    app: airflow
+#    chart: airflow-0.0.1
+#    release: airflow-dev
+#    heritage: Helm
+#spec:
+#  capacity:
+#    storage: 10Gi
+#  accessModes:
+#    - ReadWriteMany
+#  persistentVolumeReclaimPolicy: Retain
+#  azureFile:
+#    secretName: azure-secret
+#    shareName: aiflowlogs
+#    readOnly: false
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: airflow-dev-logs-pv
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/Users/jacobomunoz/Documents/ingenieria/kubernetes/airflow-kube-helm/airflow/logs"
+---
+# Source: airflow/templates/pvc.yaml
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: airflow-dev-logs
+  labels:
+    app: airflow
+    chart: airflow-0.0.1
+    release: airflow-dev
+    heritage: Helm
+ # annotations:
+ #   volume.beta.kubernetes.io/storage-class: ""
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  selector:
+    matchLabels:
+      app: airflow
+      chart: airflow-0.0.1
+      release: airflow-dev
+      heritage: Helm
